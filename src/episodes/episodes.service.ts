@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { CreateEpisodeDto } from './dto/create-episode.dto';
+import { CreateEpisodeDto, UpdateEpisodeDto } from './dto/create-episode.dto';
 import { Episode } from './entity/episode.entity';
 import { randomUUID } from 'crypto';
 
@@ -27,5 +27,16 @@ export class EpisodesService {
     const newEpisode = { ...createEpisodeDto, id: randomUUID() };
     this.episodes.push(newEpisode);
     return newEpisode;
+  }
+
+  async update(updateEpisodeDto: UpdateEpisodeDto) {
+    const updatedEpisode = { ...updateEpisodeDto, id: randomUUID() };
+    this.episodes.push(updatedEpisode);
+    return updatedEpisode;
+  }
+
+  async remove(id: string) {
+    this.episodes = this.episodes.filter((episode) => episode.id !== id);
+    return this.episodes;
   }
 }
