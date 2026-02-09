@@ -643,6 +643,7 @@ export class TransformInterceptor implements NestInterceptor {
 
 ### Pipes
 [Documentation](https://docs.nestjs.com/websockets/pipes#binding-pipes)
+[built-in-pipes](https://docs.nestjs.com/pipes#built-in-pipes)
 
 - Pipes are used to validate and transform data before it reaches the route handler.
 - They run after guards and before the controller method.
@@ -991,6 +992,15 @@ npm run migration:run
 nest g module users
 nest g controller users
 nest g service users
+```
+
+## Istall Libraries
+
+```bash
+npm install --save @nestjs/typeorm typeorm pg
+npm i --save @nestjs/config 
+npm install reflect-metadata
+npm install @types/node --save-dev
 ```
 
 ## Project setup
