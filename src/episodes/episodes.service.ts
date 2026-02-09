@@ -1,42 +1,84 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import { CreateEpisodeDto, UpdateEpisodeDto } from './dto/create-episode.dto';
 import { Episode } from './entity/episode.entity';
-import { randomUUID } from 'crypto';
+
+const UNIQUE_VIOLATION_CODE = '23505';
 
 @Injectable()
 export class EpisodesService {
-  private episodes: Episode[] = [];
+  constructor(
+    @InjectRepository(Episode)
+    private readonly episodeRepository: Repository<Episode>,
+  ) {}
 
-  async findAll(sort: 'asc' | 'desc' = 'asc') {
-    const sortAsc = (a: Episode, b: Episode) => (a.name > b.name ? 1 : -1);
-    const sortDesc = (a: Episode, b: Episode) => (a.name < b.name ? 1 : -1);
-    return sort === 'asc'
-      ? this.episodes.sort(sortAsc)
-      : this.episodes.sort(sortDesc);
+  async findAll(
+    sort: 'asc' | 'desc' = 'asc',
+    limit: number = 10,
+    page: number = 1,
+  ) {
+    const skip = (page - 1) * limit;
+
+    const [data, total] = await this.episodeRepository.findAndCount({
+      order: { name: sort === 'asc' ? 'ASC' : 'DESC' },
+      take: limit,
+      skip,
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        limit,
+        page,
+        totalPages: Math.ceil(total / limit) || 1,
+      },
+    };
   }
 
   async findFeatured() {
-    return this.episodes.filter((episode) => episode.featured);
+    return this.episodeRepository.find({
+      where: { featured: true },
+      order: { name: 'ASC' },
+    });
   }
 
   async findOne(id: string) {
-    return this.episodes.find((episode) => episode.id === id);
+    return this.episodeRepository.findOne({ where: { id } });
   }
 
   async create(createEpisodeDto: CreateEpisodeDto) {
-    const newEpisode = { ...createEpisodeDto, id: randomUUID() };
-    this.episodes.push(newEpisode);
-    return newEpisode;
+    try {
+      const episode = this.episodeRepository.create(createEpisodeDto);
+      return await this.episodeRepository.save(episode);
+    } catch (err: any) {
+      if (err?.code === UNIQUE_VIOLATION_CODE) {
+        throw new ConflictException(`Episode with name "${createEpisodeDto.name}" already exists`);
+      }
+      throw err;
+    }
   }
 
   async update(updateEpisodeDto: UpdateEpisodeDto) {
-    const updatedEpisode = { ...updateEpisodeDto, id: randomUUID() };
-    this.episodes.push(updatedEpisode);
-    return updatedEpisode;
+    const { id, ...rest } = updateEpisodeDto;
+    const episode = await this.episodeRepository.findOne({ where: { id } });
+    if (!episode) return null;
+    try {
+      this.episodeRepository.merge(episode, rest);
+      return await this.episodeRepository.save(episode);
+    } catch (err: any) {
+      if (err?.code === UNIQUE_VIOLATION_CODE) {
+        throw new ConflictException(`Episode with name "${rest.name ?? episode.name}" already exists`);
+      }
+      throw err;
+    }
   }
 
   async remove(id: string) {
-    this.episodes = this.episodes.filter((episode) => episode.id !== id);
-    return this.episodes;
+    const episode = await this.episodeRepository.findOne({ where: { id } });
+    if (!episode) return null;
+    await this.episodeRepository.softRemove(episode);
+    return episode;
   }
 }
