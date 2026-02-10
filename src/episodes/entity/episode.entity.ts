@@ -1,3 +1,5 @@
+import { Type } from 'class-transformer';
+import { IsDate } from 'class-validator';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, DeleteDateColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity()
@@ -19,4 +21,9 @@ export class Episode {
 
   @DeleteDateColumn({ name: 'deleted_at' })
   deletedAt: Date | null;
+
+  @IsDate()
+  @Type(() => Date)
+  @Column({ name: 'published_at', default: () => 'CURRENT_TIMESTAMP' })
+  publishedAt: Date;
 }

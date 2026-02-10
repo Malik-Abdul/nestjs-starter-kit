@@ -26,7 +26,7 @@ import { DataSource } from 'typeorm';
       password: '',
       database: 'nest_app_v2',
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     EpisodesModule, 
     TopicsModule
