@@ -976,14 +976,14 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ## Migration
 
 ```bash
-# Update Table
-# 1) Change the entity – add/rename/remove columns (or relations) in the right .entity.ts file like
-# src/countries/entities/country.entity.ts
-# 2) Generate the migration (TypeORM compares entities with the DB and writes the migration):
-# Then run the command like below
-npm run migration:generate -- src/database/migrations/UpdateCountriesTableWithAddColumnGeonameidAndUpdatedAt
-# Then run
+
+# Steps to add a new column
+# 1. Update the entity file
+# 2. 
+npm run migration:generate -- src/database/migrations/AddPublishedAtToEpisode
+# 3. 
 npm run migration:run
+
 ```
 
 ## Create Module, Service and Controllers
