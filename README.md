@@ -9,33 +9,33 @@
 NestJS is not limited to building APIs. Instead, it allows you to create three different types of applications:
 
 - **HTTP server applications**
-You can create an HTTP server using NestFactory.create() to define request endpoints and effectively build APIs and web servers.
+  You can create an HTTP server using NestFactory.create() to define request endpoints and effectively build APIs and web servers.
 
 - **Microservices applications**
-You can also create microservices using NestFactory.createMicroservice(). These are similar to HTTP server applications, except they can use different transport protocols such as TCP or NATS, and they communicate over an internal network.
+  You can also create microservices using NestFactory.createMicroservice(). These are similar to HTTP server applications, except they can use different transport protocols such as TCP or NATS, and they communicate over an internal network.
 
 - **Standalone applications**
-You can create standalone applications using NestFactory.createApplicationContext(). A standalone application does not have a network listener, which makes it ideal for scheduled tasks, background jobs, or even building CLI tools.
+  You can create standalone applications using NestFactory.createApplicationContext(). A standalone application does not have a network listener, which makes it ideal for scheduled tasks, background jobs, or even building CLI tools.
 
 All of these application types have one thing in common:
+
 - They require a root module. So let’s talk about modules next.
 
 ### Modules
- - Modules are the building blocks of a NestJS application. You can think of a Nest app as a graph of modules. At the top, there is always a root module (usually AppModule), and other feature modules are connected to it.
- - A module is a class decorated with the @Module() decorator.
- - A module can contain multiple controllers.
- - A module can contain multiple providers (services, repositories, helpers, etc.).
- - A module can import other modules (sub-modules / feature modules).
- - A module can export providers so they can be used by other modules.
- - A module does not export “modules” or “controllers” — it exports providers only.
 
-***Basic example***
+- Modules are the building blocks of a NestJS application. You can think of a Nest app as a graph of modules. At the top, there is always a root module (usually AppModule), and other feature modules are connected to it.
+- A module is a class decorated with the @Module() decorator.
+- A module can contain multiple controllers.
+- A module can contain multiple providers (services, repositories, helpers, etc.).
+- A module can import other modules (sub-modules / feature modules).
+- A module can export providers so they can be used by other modules.
+- A module does not export “modules” or “controllers” — it exports providers only.
 
-***app.module.ts***
+**_Basic example_**
 
-```ts 
- 
+**_app.module.ts_**
 
+```ts
 import { Module } from '@nestjs/common';
 import { UsersModule } from './users/users.module';
 
@@ -43,12 +43,11 @@ import { UsersModule } from './users/users.module';
   imports: [UsersModule], // importing a sub-module
 })
 export class AppModule {}
-
 ```
 
-***episodes.module.ts***
+**_episodes.module.ts_**
 
-```ts 
+```ts
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -59,13 +58,11 @@ import { UsersService } from './users.service';
   exports: [UsersService], // exporting provider
 })
 export class UsersModule {}
-
 ```
 
-***users.controller.ts***
+**_users.controller.ts_**
 
 ```ts
-
 import { Controller, Get } from '@nestjs/common';
 import { UsersService } from './users.service';
 
@@ -78,13 +75,11 @@ export class UsersController {
     return this.usersService.getUsers();
   }
 }
-
 ```
 
-***users.service.ts***
+**_users.service.ts_**
 
 ```ts
-
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -93,10 +88,9 @@ export class UsersService {
     return ['Ali', 'Ahmed', 'Sara'];
   }
 }
-
 ```
 
-***How modules connect (mental model)***
+**_How modules connect (mental model)_**
 
 ```mermaid
 flowchart TD
@@ -115,20 +109,20 @@ flowchart TD
 - UsersService can be shared with other modules because it’s exported
 - One-liner to remember: Modules organize your application, controllers handle requests, and providers contain business logic.
 
- ### Decorator
- - A decorator is a special kind of function that can be attached to classes, methods, properties, parameters, or accessors.
- - Decorators are used to add metadata to these elements, which NestJS uses to change or define their behavior at runtime.
- - Decorators themselves usually do not modify the logic directly. Instead, they provide metadata that NestJS reads to decide how something should behave.
-  - Decorators can be applied to classes, methods, properties, and parameters.
-  - They help NestJS understand the role of a class or method (controller, module, route, injectable, etc.).
-- ***Analogy:***
-Think of decorators as accessories or suits that give special powers.
-An empty class by itself does nothing, but once you “dress it up” with decorators like @Module() or @Controller(), NestJS knows how to use it.
+### Decorator
 
-***Class decorator – @Module()***
+- A decorator is a special kind of function that can be attached to classes, methods, properties, parameters, or accessors.
+- Decorators are used to add metadata to these elements, which NestJS uses to change or define their behavior at runtime.
+- Decorators themselves usually do not modify the logic directly. Instead, they provide metadata that NestJS reads to decide how something should behave.
+- Decorators can be applied to classes, methods, properties, and parameters.
+- They help NestJS understand the role of a class or method (controller, module, route, injectable, etc.).
+- **_Analogy:_**
+  Think of decorators as accessories or suits that give special powers.
+  An empty class by itself does nothing, but once you “dress it up” with decorators like @Module() or @Controller(), NestJS knows how to use it.
+
+**_Class decorator – @Module()_**
 
 ```ts
-
 import { Module } from '@nestjs/common';
 
 @Module({
@@ -138,10 +132,9 @@ import { Module } from '@nestjs/common';
 export class AppModule {}
 // Without @Module(), this class is just a normal TypeScript class.
 // With @Module(), NestJS recognizes it as a module.
-
 ```
 
-***Class decorator – @Controller()***
+**_Class decorator – @Controller()_**
 
 ```ts
 import { Controller } from '@nestjs/common';
@@ -151,17 +144,15 @@ export class UsersController {}
 
 // This tells NestJS:
 // This class handles HTTP requests for /users
-
 ```
 
-***Method decorator – @Get()***
+**_Method decorator – @Get()_**
 
 ```ts
 import { Controller, Get } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
-
   @Get()
   findAll() {
     return 'All users';
@@ -170,27 +161,24 @@ export class UsersController {
 
 // @Get() adds metadata saying:
 // This method should run when a GET request comes to /users
-
 ```
 
-***Parameter decorator – @Body()***
+**_Parameter decorator – @Body()_**
 
 ```ts
 import { Controller, Post, Body } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
-
   @Post()
   createUser(@Body() body: any) {
     return body;
   }
 }
 // @Body() tells NestJS to inject the request body into the parameter.
-
 ```
 
-***Property / class decorator – @Injectable()***
+**_Property / class decorator – @Injectable()_**
 
 ```ts
 import { Injectable } from '@nestjs/common';
@@ -202,7 +190,6 @@ export class UsersService {
   }
 }
 // @Injectable() marks the class as a provider that can be injected using dependency injection.
-
 ```
 
 #### Key takeaway
@@ -211,13 +198,13 @@ export class UsersService {
 - NestJS reads that metadata
 - NestJS then decides how to create, connect, and execute your code
 
-
 ### Controllers
- - Controllers are classes annotated with the @Controller() decorator.
- - A controller is responsible for receiving incoming HTTP requests and returning responses.
- - You can define a route prefix in the controller decorator, for example @Controller('users').
- - Inside a controller, methods handle different HTTP requests using decorators such as
-@Get(), @Post(), @Put(), and @Delete().
+
+- Controllers are classes annotated with the @Controller() decorator.
+- A controller is responsible for receiving incoming HTTP requests and returning responses.
+- You can define a route prefix in the controller decorator, for example @Controller('users').
+- Inside a controller, methods handle different HTTP requests using decorators such as
+  @Get(), @Post(), @Put(), and @Delete().
 - These HTTP method decorators can optionally take a sub-route as a parameter.
 
 ```js
@@ -249,11 +236,9 @@ Any business logic, database access, or complex processing should be delegated t
 - Providers usually contain business logic, data access, or reusable functionality.
 - A common example of a provider is a service, such as UsersService.
 
-***Basic Example***
+**_Basic Example_**
 
 ```js
-
-
 import { Injectable } from '@nestjs/common';
 
 @Injectable()
@@ -262,17 +247,13 @@ export class UsersService {
     return ['Ali', 'Ahmed', 'Sara'];
   }
 }
-
-
 ```
 
 - What @Injectable() does: Marks the class as a provider, Allows NestJS to manage its lifecycle and Makes the class available for dependency injection
 
-***Registering the provider in a module***
+**_Registering the provider in a module_**
 
 ```js
-
-
 import { Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
@@ -286,10 +267,9 @@ export class UsersModule {}
 
 // providers → registers the provider in this module
 // exports → makes the provider available to other modules that import this module
-
 ```
 
-***Injecting the provider into a controller***
+**_Injecting the provider into a controller_**
 
 ```js
 
@@ -313,27 +293,26 @@ export class UsersController {
 
 ```
 
-***Dependency Injection & Singleton behavior***
+**_Dependency Injection & Singleton behavior_**
 
 - NestJS uses dependency injection (DI) to provide instances of providers.
 - By default, providers are singletons per module: One instance is created, The same instance is shared wherever it’s injected
 
-
 ### Middleware
 
 - When you travel by plane, you don’t go straight to your seat.
-You pass through check-in, security, border control, and boarding before finally getting on the plane.
+  You pass through check-in, security, border control, and boarding before finally getting on the plane.
 - In the same way, an HTTP request in NestJS can pass through multiple stages before it reaches the controller’s route handler.
 - These stages are handled using middleware.
 - Middleware runs before the request is handled by the controller.
 - Common use cases include:
- - logging incoming requests
- - authentication
- - request transformation
- - adding headers or metadata
+- logging incoming requests
+- authentication
+- request transformation
+- adding headers or metadata
 - Regarding NestJs, Middleware is a function (or class) that has access to the request, response, and the next function, and runs before the route handler.
 
-***Create middleware (logger.middleware.ts)***
+**_Create middleware (logger.middleware.ts)_**
 
 ```js
 
@@ -350,7 +329,7 @@ export class LoggerMiddleware implements NestMiddleware {
 
 ```
 
-***Apply middleware in a module (app.module.ts)***
+**_Apply middleware in a module (app.module.ts)_**
 
 ```js
 
@@ -371,9 +350,9 @@ export class AppModule implements NestModule {
 
 - What happens now?: For a request like: GET /users
 - The flow becomes:
- - Request LoggerMiddleware
- - Controller
- - Response
+- Request LoggerMiddleware
+- Controller
+- Response
 
 ### Guards
 
@@ -382,19 +361,20 @@ export class AppModule implements NestModule {
 - Their primary purpose is to determine whether a request should be handled by the route handler or not.
 - Guards run after middleware but before the controller method.
 - They have access to the ExecutionContext, which allows them to inspect:
- - the incoming request
- - the user
- - route metadata (roles, permissions, etc.)
+- the incoming request
+- the user
+- route metadata (roles, permissions, etc.)
 - A guard must return:
- - true → request is allowed to proceed
- - false → request is denied (NestJS throws a 403 Forbidden by default)
+- true → request is allowed to proceed
+- false → request is denied (NestJS throws a 403 Forbidden by default)
 - Typical use cases:
- - authentication
- - authorization (roles & permissions)
- - feature access control
- - custom business rules
+- authentication
+- authorization (roles & permissions)
+- feature access control
+- custom business rules
 
-***How guards fit in the request flow?***
+**_How guards fit in the request flow?_**
+
 ```js
 
 Request
@@ -404,7 +384,8 @@ Request
  → Response
 
 ```
-***Example 1: Simple authentication guard***
+
+**_Example 1: Simple authentication guard_**
 
 ```js
 
@@ -424,7 +405,7 @@ export class AuthGuard implements CanActivate {
 // If not → deny request
 ```
 
-***Apply the guard to a route***
+**_Apply the guard to a route_**
 
 ```js
 import { Controller, Get, UseGuards } from '@nestjs/common';
@@ -432,7 +413,6 @@ import { AuthGuard } from './auth.guard';
 
 @Controller('users')
 export class UsersController {
-
   @Get()
   @UseGuards(AuthGuard)
   findAll() {
@@ -441,11 +421,10 @@ export class UsersController {
 }
 // Request with Authorization header → ✅ allowed
 // Request without it → ❌ 403 Forbidden
-
 ```
 
-***Example 2: Role-based guard (Authorization)***
-***Create a custom decorator***
+**_Example 2: Role-based guard (Authorization)_**
+**_Create a custom decorator_**
 
 ```js
 
@@ -456,7 +435,7 @@ export const Roles = (...roles: string[]) => SetMetadata('roles', roles);
 
 ```
 
-***Create the guard***
+**_Create the guard_**
 
 ```js
 
@@ -487,10 +466,9 @@ export class RolesGuard implements CanActivate {
 
 ```
 
-***Use the guard + decorator***
+**_Use the guard + decorator_**
 
 ```js
-
 import { Controller, Get, UseGuards } from '@nestjs/common';
 import { Roles } from './roles.decorator';
 import { RolesGuard } from './roles.guard';
@@ -498,18 +476,16 @@ import { RolesGuard } from './roles.guard';
 @Controller('admin')
 @UseGuards(RolesGuard)
 export class AdminController {
-
   @Get()
   @Roles('admin')
   getAdminData() {
     return 'Admin only data';
   }
 }
-
-
 ```
 
 ### Interceptors
+
 - Interceptors are executed after guards and before and after the route handler (controller method).
 - They allow you to intercept and transform both the incoming request and the outgoing response.
 - Interceptors give you fine-grained control over the request–response lifecycle.
@@ -517,13 +493,13 @@ export class AdminController {
 - Interceptors can run before and after route handlers
 - Interceptors sit around your route handler, letting you observe, modify, or extend both the request and the response.
 - Common use cases include:
- - logging request and response data
- - transforming or mapping response objects
- - caching responses
- - measuring execution time
- - extending or overriding method behavior
+- logging request and response data
+- transforming or mapping response objects
+- caching responses
+- measuring execution time
+- extending or overriding method behavior
 
-***Where interceptors fit in the lifecycle***
+**_Where interceptors fit in the lifecycle_**
 
 ```scss
 
@@ -537,7 +513,7 @@ Request
 
 ```
 
-***Example 1: Logging interceptor***
+**_Example 1: Logging interceptor_**
 
 **Create an interceptor**
 
@@ -576,23 +552,20 @@ export class LoggingInterceptor implements NestInterceptor {
 **Apply the interceptor**
 
 ```js
-
 import { Controller, Get, UseInterceptors } from '@nestjs/common';
 import { LoggingInterceptor } from './logging.interceptor';
 
 @Controller('users')
 export class UsersController {
-
   @Get()
   @UseInterceptors(LoggingInterceptor)
   findAll() {
     return 'Users list';
   }
 }
-
 ```
 
-***Example 2: Response transformation interceptor***
+**_Example 2: Response transformation interceptor_**
 
 ```js
 
@@ -633,8 +606,7 @@ export class TransformInterceptor implements NestInterceptor {
 
 ```
 
-
-***Interceptors vs Guards vs Middleware (quick clarity)***
+**_Interceptors vs Guards vs Middleware (quick clarity)_**
 
 - Middleware → preprocess request
 - Guards → allow or deny access
@@ -642,6 +614,7 @@ export class TransformInterceptor implements NestInterceptor {
 - Pipes → validate & transform input
 
 ### Pipes
+
 [Documentation](https://docs.nestjs.com/websockets/pipes#binding-pipes)
 [built-in-pipes](https://docs.nestjs.com/pipes#built-in-pipes)
 
@@ -650,11 +623,11 @@ export class TransformInterceptor implements NestInterceptor {
 - Pipes operate on method parameters (such as @Body(), @Param(), @Query()).
 - A pipe is a class that implements the PipeTransform interface and is usually annotated with @Injectable().
 - Pipes can:
- - validate incoming data against rules or constraints
- - transform data into a more suitable format for processing
+- validate incoming data against rules or constraints
+- transform data into a more suitable format for processing
 - If validation fails, a pipe can throw an exception, which stops the request and prevents the route handler from executing.
 
-***Where pipes fit in the lifecycle?***
+**_Where pipes fit in the lifecycle?_**
 
 ```scss
 
@@ -668,35 +641,33 @@ Request
  → Response
 
 ```
-***Example 1: Built-in pipe – ParseIntPipe***
+
+**_Example 1: Built-in pipe – ParseIntPipe_**
 
 ```ts
-
 import { Controller, Get, Param, ParseIntPipe } from '@nestjs/common';
 
 @Controller('users')
 export class UsersController {
-
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return `User ID is ${id}`;
   }
 }
-
 ```
-***What happens here?***
+
+**_What happens here?_**
 
 - Incoming request: GET /users/10
 - id is received as a string "10"
 - ParseIntPipe converts it into a number 10
 - If conversion fails → NestJS throws 400 Bad Request
 
-***Example 2: Validation pipe using DTOs***
+**_Example 2: Validation pipe using DTOs_**
 
-***Create a DTO***
+**_Create a DTO_**
 
 ```ts
-
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
 export class CreateUserDto {
@@ -706,10 +677,9 @@ export class CreateUserDto {
   @IsNotEmpty()
   name: string;
 }
-
 ```
 
-***Use ValidationPipe***
+**_Use ValidationPipe_**
 
 ```ts
 
@@ -736,7 +706,7 @@ export class UsersController {
 
 ```
 
-***Example 3: Custom pipe***
+**_Example 3: Custom pipe_**
 
 ```ts
 
@@ -761,7 +731,8 @@ create(@Body('name', TrimPipe) name: string) {
 }
 
 ```
-***Validation vs Transformation***
+
+**_Validation vs Transformation_**
 
 - Validation → check if data is acceptable
 - Transformation → change data format
@@ -780,25 +751,26 @@ create(@Body('name', TrimPipe) name: string) {
 - Exception Filters are classes that implement the ExceptionFilter interface.
 - They are decorated with the @Catch() decorator.
 - Exception filters can catch exceptions thrown from any part of the request lifecycle, including:
- - guards
- - interceptors
- - pipes
- - route handlers (controllers)
+- guards
+- interceptors
+- pipes
+- route handlers (controllers)
 - When an exception is caught, the filter determines:
- - how the error is handled
- - what response is sent to the client
+- how the error is handled
+- what response is sent to the client
 - A common use case is a global exception filter that:
- - catches all unhandled exceptions
- - logs error details for debugging
- - returns a standardized error response
- - prevents sensitive internal details from being exposed
+- catches all unhandled exceptions
+- logs error details for debugging
+- returns a standardized error response
+- prevents sensitive internal details from being exposed
 - This ensures:
- - consistent error messages for clients
- - better security
- - happier frontend developers 🎉
+- consistent error messages for clients
+- better security
+- happier frontend developers 🎉
 - Exception filters provide a centralized and structured way to handle errors while keeping the application stable and secure.
 
-***Where exception filters fit in the lifecycle?***
+**_Where exception filters fit in the lifecycle?_**
+
 ```nginx
 Request
  → Middleware
@@ -810,9 +782,10 @@ Request
  → Response
 
 ```
-***Example 1: Catching a specific exception***
 
-***Create an exception filter***
+**_Example 1: Catching a specific exception_**
+
+**_Create an exception filter_**
 
 ```ts
 import {
@@ -841,30 +814,32 @@ export class HttpExceptionFilter implements ExceptionFilter {
     });
   }
 }
-
 ```
-***Apply the filter to a controller***
+
+**_Apply the filter to a controller_**
 
 ```ts
-
-import { Controller, Get, UseFilters, BadRequestException } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  UseFilters,
+  BadRequestException,
+} from '@nestjs/common';
 import { HttpExceptionFilter } from './http-exception.filter';
 
 @Controller('users')
 @UseFilters(HttpExceptionFilter)
 export class UsersController {
-
   @Get()
   findAll() {
     throw new BadRequestException('Invalid request');
   }
 }
-
 ```
 
-***Example 2: Global exception filter***
+**_Example 2: Global exception filter_**
 
-***Create a global filter***
+**_Create a global filter_**
 
 ```ts
 import {
@@ -881,8 +856,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const request = ctx.getRequest();
 
-    const status =
-      exception.status || HttpStatus.INTERNAL_SERVER_ERROR;
+    const status = exception.status || HttpStatus.INTERNAL_SERVER_ERROR;
 
     response.status(status).json({
       success: false,
@@ -892,13 +866,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     });
   }
 }
-
 ```
 
-***Register globally (main.ts)***
+**_Register globally (main.ts)_**
 
 ```ts
-
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './all-exceptions.filter';
@@ -909,45 +881,40 @@ async function bootstrap() {
   await app.listen(3000);
 }
 bootstrap();
-
 ```
 
-***Example 3: Error response consistency***
+**_Example 3: Error response consistency_**
 
 ```json
-
 {
   "statusCode": 400,
   "message": "Invalid request"
 }
-
 ```
 
-***With exception filter***
+**_With exception filter_**
 
 ```json
-
 {
   "success": false,
   "statusCode": 400,
   "message": "Invalid request",
   "path": "/users"
 }
-
-
 ```
 
-***Key things to remember***
+**_Key things to remember_**
 
 - Exception filters only run when an error is thrown
 - They can be:
- - method-scoped
- - controller-scoped
- - global
+- method-scoped
+- controller-scoped
+- global
 - They should not contain business logic
 - They help enforce security and consistency
 
-***Exception Filters vs other NestJS features (quick clarity)***
+**_Exception Filters vs other NestJS features (quick clarity)_**
+
 - Pipes → validate input
 - Guards → allow or deny access
 - Interceptors → wrap execution
@@ -979,9 +946,9 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 # Steps to add a new column
 # 1. Update the entity file
-# 2. 
+# 2.
 npm run migration:generate -- src/database/migrations/AddPublishedAtToEpisode
-# 3. 
+# 3.
 npm run migration:run
 
 ```
@@ -998,9 +965,25 @@ nest g service users
 
 ```bash
 npm install --save @nestjs/typeorm typeorm pg
-npm i --save @nestjs/config 
+npm i --save @nestjs/config
 npm install reflect-metadata
 npm install @types/node --save-dev
+
+
+# webhooks
+
+npm install svix
+npm install -g localtunnel
+# now run this command
+lt --port 7002
+# you will get this message
+# your url is: https://sixty-swans-find.loca.lt
+# https://shiny-peaches-sip.loca.lt/
+
+
+npm install -g ngrok
+ngrok config add-authtoken 3AJTwOVf1it2ED7haj6SCgNnP0h_3e6v53t5FixVYp7JzFPex
+ngrok http 7002
 ```
 
 ## Project setup

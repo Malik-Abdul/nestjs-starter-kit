@@ -6,6 +6,9 @@ import { TopicsModule } from './topics/topics.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
+import { WebhooksModule } from './webhooks/webhooks.module';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -29,7 +32,7 @@ import { DataSource } from 'typeorm';
       synchronize: false,
     }),
     EpisodesModule, 
-    TopicsModule
+    TopicsModule, WebhooksModule, AuthModule, UsersModule
   ],
   controllers: [AppController],
   providers: [AppService],
